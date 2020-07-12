@@ -1,0 +1,38 @@
+Description: >
+  Kelvin Otuya / Etiam Innovation Systems
+  This template deploys a VPC. with a pair of public and private subnet accross two availabilty zones.
+  It deploys an Internet Gateway, with route on the public sunbets. It deploys a pair of NAT Gateways.
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that will be prefixed
+    Type: String
+  
+  VpcCIDR:
+    Description: Please enter IP range (CIDR notation) for this 
+    Type: String
+    Default: 10.0.0.0/16
+
+Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags: 
+      - Key:  Name
+        Value: !Ref EnvironmentName
+
+  #Internet access for VPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway 
+    DependsOn: VPC 
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment 
+    #Notice, IGW can not be attache to VPC unless both are created
+    Properties:
+      VPCId: !Ref VPC 
+      InternetGatewayId: !Ref InternetGateway
+      
